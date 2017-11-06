@@ -1,4 +1,4 @@
-<small>第{{$paginator->currentPage()}}页 / 共 {{$paginator -> lastPage()}} 页， 共 {{$paginator->total()}} 条数据 | 每页 {{$paginator -> count()}} 条数据 </small>
+<small>第{{$paginator->currentPage()}}页 / 共 {{$paginator -> lastPage()}} 页， 共 {{$paginator->total()}} 条数据 | 本页 {{$paginator -> count()}} 条数据 </small>
 @if ($paginator->hasPages())
     <ul class="am-pagination tpl-pagination">
         {{-- Previous Page Link --}}

@@ -325,7 +325,7 @@ $ vim /usr/local/php/etc/php.ini
         });
 ```
 
-## Markdown 继承
+## Markdown 集成
 > 参照 [SimpleMDE编辑器 + 提取HTML + 美化输出](https://segmentfault.com/a/1190000009469890)
 
 > 参照 [simplemde 使用+php获取html](http://m.blog.csdn.net/qq_28271035/article/details/77773759)
@@ -338,3 +338,69 @@ $ vim /usr/local/php/etc/php.ini
 ## [微信开发](https://easywechat.org/)
 
 ##
+
+## 集成 editorMd 插件错误
+
+### TokenMismatchException in VerifyCsrfToken.php line 68:
+> 找到 `plugins/image-dialog/image-dialog.js` 文件
+
+> 原因：插件生成的表单中没有 csrf token值，laravel表单认证需要token值
+代码展示：
+html 添加
+``` html
+    <meta name="_token" content="{{ csrf_token() }}"/>
+```
+image-dialog.js 修改
+``` javascript
+    var token = $('meta[name="_token"]').attr('content'); 获取上述 token值
+
+    var dialogContent = ( (settings.imageUpload) ? "<form action=\"" + action +"\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">" ) +
+                                            ( (settings.imageUpload) ? "<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" guid=\"" + guid + "\"></iframe>" : "" ) +
+                                            "<label>" + imageLang.url + "</label>" +
+                                            "<input type=\"text\" data-url />" + (function(){
+                                                return (settings.imageUpload) ? "<div class=\"" + classPrefix + "file-input\">" +
+                                                                                    "<input type=\"file\" name=\"" + classPrefix + "image-file\" accept=\"image/*\" />" +
+                                                                                    "<input type=\"submit\" value=\"" + imageLang.uploadButton + "\" />" +
+                                                                                "</div>" : "";
+                                            })() +
+                                            "<br/>" +
+                                            "<label>" + imageLang.alt + "</label>" +
+                                            "<input type=\"text\" value=\"" + selection + "\" data-alt />" +
+                                            "<br/>" +
+                                            "<label>" + imageLang.link + "</label>" +
+                                            "<input type=\"text\" value=\"http://\" data-link />" +
+                                            "<input type=\"hidden\" name=\"_token\" value="+token+" />" + 添加此行
+                                            "<br/>" +
+                                        ( (settings.imageUpload) ? "</form>" : "</div>");
+```
+
+``` php
+    路由：
+    Route::post('upload/image', 'ArticleController@uploadImage');
+    方法
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('editormd-image-file')) {
+            if ($request->file('editormd-image-file')->isValid()) {
+                $url = '/storage/app/'. $request -> file('editormd-image-file') -> store('editor');
+                return [
+                    'success'       => 1,
+                    'message'       => '上传文件成功',
+                    'url'           => asset($url)
+                ];
+            } else {
+                return [
+                    'success'       => 0,
+                    'message'       => '上传文件失败',
+                    'url'           => ''
+                ];
+            }
+        } else {
+            return [
+                'success'       => 0,
+                'message'       => '上传文件不能为空',
+                'url'           => ''
+            ];
+        }
+    }
+```

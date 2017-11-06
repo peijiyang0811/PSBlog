@@ -100,6 +100,7 @@ Route::group(['namespace' => 'Blog', 'prefix'=>'center','middleware'=>'blog'], f
         Route::get('edit/{article_uuid}', 'UserController@edit');
         Route::post('add_blog', 'ArticleController@addBlog');
         Route::post('edit_blog', 'ArticleController@editBlog');
+        Route::post('upload/image', 'ArticleController@uploadImage');
     });
     // 收藏
     Route::group(['prefix' => 'collect'], function (){

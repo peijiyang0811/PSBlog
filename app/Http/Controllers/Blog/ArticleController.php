@@ -32,8 +32,10 @@ class ArticleController extends Controller
     public function addBlog(Request $request)
     {
         $params = $request -> except('_token');
-        $markdown = new MarkdownParser();
-        $params['contents'] = $markdown -> makeHtml($params['markdown']);
+        $params['contents'] = $params['my-editormd-html-code'];
+        unset($params['my-editormd-html-code']);
+        //$markdown = new MarkdownParser();
+        //$params['contents'] = $markdown -> makeHtml($params['markdown']);
         if ($request->hasFile('head_image')) {
             if ($request->file('head_image')->isValid()) {
                 $params['image'] = '/storage/app/'. $request -> file('head_image') -> store('article');
@@ -57,6 +59,8 @@ class ArticleController extends Controller
     public function editBlog(Request $request)
     {
         $params = $request -> except('_token');
+        $params['contents'] = $params['my-editormd-html-code'];
+        unset($params['my-editormd-html-code']);
         $old_image = $params['old_image'];
         $id = $params['id'];
         unset($params['id']);
@@ -69,8 +73,8 @@ class ArticleController extends Controller
             unset($old_image);
             unset($params['new_head_image']);
         }
-        $markdown = new MarkdownParser();
-        $params['contents'] = $markdown -> makeHtml($params['markdown']);
+//        $markdown = new MarkdownParser();
+//        $params['contents'] = $markdown -> makeHtml($params['markdown']);
         $params['update_time'] = time();
         $row = DB::table('article')
                 -> where('id', $id)
@@ -121,5 +125,35 @@ class ArticleController extends Controller
         }
         DB::table('article') -> where('article_uuid', $article_uuid) -> increment('visit_count');
         return view('blog.article.detail', ['article' => $article, 'comments' => $comments, 'prev' => $prev, 'next' => $next]);
+    }
+    /**
+     * @name 配合editorMd上传图片
+     * 
+     * 
+     * */
+    public function uploadImage(Request $request)
+    {
+        if ($request->hasFile('editormd-image-file')) {
+            if ($request->file('editormd-image-file')->isValid()) {
+                $url = '/storage/app/'. $request -> file('editormd-image-file') -> store('editor');
+                return [
+                    'success'       => 1,
+                    'message'       => '上传文件成功',
+                    'url'           => asset($url)
+                ];
+            } else {
+                return [
+                    'success'       => 0,
+                    'message'       => '上传文件失败',
+                    'url'           => ''
+                ];
+            }
+        } else {
+            return [
+                'success'       => 0,
+                'message'       => '上传文件不能为空',
+                'url'           => ''
+            ];
+        }
     }
 }
