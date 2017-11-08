@@ -81,7 +81,7 @@
                 height  : 400,
                 syncScrolling : "single",
                 path    : "/editorMd/lib/",//注意2：你的路径
-                saveHTMLToTextarea : true,//注意3：保存md 语法的 html 格式
+                saveHTMLToTextarea : false,//注意3：保存md 语法的 html 格式
                 //后端要想获得第二个textarea中的值，首先需要打开editor.md的saveHTMLToTextarea : true设置（见下面）；
                 // 这个配置，方便post提交表单
                 emoji: true,//emoji表情，默认关闭

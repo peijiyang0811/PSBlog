@@ -21,8 +21,9 @@
     <link rel="stylesheet" href="{{asset('/css/returnTop.css')}}">
     {{--<link rel="stylesheet" href="{{asset('/markdown/dist/simplemde-theme-base.min.css')}}">
     <link rel="stylesheet" href="{{asset('/markdown/dist/font-awesome.min.css')}}">--}}
-    <link rel="stylesheet" href="{{asset('/markdown/dist/github-markdown.css')}}">
+    {{--<link rel="stylesheet" href="{{asset('/markdown/dist/github-markdown.css')}}">--}}
     <link rel="stylesheet" href="{{asset('/editorMd/css/editormd.min.css')}}">
+    <link rel="stylesheet" href="{{asset('/prism/prism.css')}}">
 </head>
 
 <body id="blog">
@@ -90,8 +91,16 @@
 <script src="{{asset('/home//js/jquery.min.js')}}"></script>
 <script src="{{asset('/js/tools/timer.js')}}"></script>
 <script src="{{asset('/js/tools/system.js')}}"></script>
+<script src="{{asset('/prism/prism.js')}}"></script>
 {{--<script src="{{asset('/markdown/dist/simplemde.min.js')}}"></script>--}}
 <script src="{{asset('/editorMd/editormd.min.js')}}"></script>
+{{--<script src="{{asset('/editorMd/lib/marked.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/prettify.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/raphael.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/underscore.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/sequence-diagram.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/flowchart.min.js')}}"></script>
+<script src="{{asset('/editorMd/lib/jquery.flowchart.min.js')}}"></script>--}}
 <!--<![endif]-->
 <!--[if lte IE 8 ]>
 <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>

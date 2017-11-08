@@ -32,10 +32,9 @@ class ArticleController extends Controller
     public function addBlog(Request $request)
     {
         $params = $request -> except('_token');
-        $params['contents'] = $params['my-editormd-html-code'];
-        unset($params['my-editormd-html-code']);
-        //$markdown = new MarkdownParser();
-        //$params['contents'] = $markdown -> makeHtml($params['markdown']);
+        /*$params['contents'] = $params['my-editormd-html-code'];
+        unset($params['my-editormd-html-code']);*/
+        $params['contents'] = $this -> markdownToHtml($params['markdown']);
         if ($request->hasFile('head_image')) {
             if ($request->file('head_image')->isValid()) {
                 $params['image'] = '/storage/app/'. $request -> file('head_image') -> store('article');
@@ -50,6 +49,34 @@ class ArticleController extends Controller
         if (!$id) return back() -> withInput() -> with('error', '添加失败');
         return redirect(url('/center/blog')) -> with('success', '添加成功');
     }
+    private function markdownToHtml($markdown)
+    {
+        // 正则匹配到全部的iframe
+        preg_match_all('/&lt;iframe.*iframe&gt;/', $markdown, $iframe);
+        // 如果有iframe 则先替换为临时字符串
+        if (!empty($iframe[0])) {
+            $tmp = [];
+            // 组合临时字符串
+            foreach ($iframe[0] as $k => $v) {
+                $tmp[] = '【iframe'.$k.'】';
+            }
+            // 替换临时字符串
+            $markdown = str_replace($iframe[0], $tmp, $markdown);
+            // 讲iframe转义
+            $replace = array_map(function ($v){
+                return htmlspecialchars_decode($v);
+            }, $iframe[0]);
+        }
+        // markdown转html
+        $parser = new MarkdownParser();
+        $html = $parser->makeHtml($markdown);
+        $html = str_replace('<code class="', '<code class="language-', $html);
+        // 将临时字符串替换为iframe
+        if (!empty($iframe[0])) {
+            $html = str_replace($tmp, $replace, $html);
+        }
+        return $html;
+    }
     /**
      * @name 修改博客数据
      * 
@@ -59,8 +86,9 @@ class ArticleController extends Controller
     public function editBlog(Request $request)
     {
         $params = $request -> except('_token');
-        $params['contents'] = $params['my-editormd-html-code'];
-        unset($params['my-editormd-html-code']);
+        $params['contents'] = $this -> markdownToHtml($params['markdown']);
+            /*$params['contents'] = $params['my-editormd-html-code'];
+            unset($params['my-editormd-html-code']);*/
         $old_image = $params['old_image'];
         $id = $params['id'];
         unset($params['id']);
@@ -100,15 +128,9 @@ class ArticleController extends Controller
             return ['error' => 404];
         }
         // 上一篇
-        $prev = DB::table('article')
-                                -> select('article_uuid', 'title')
-                                -> where('id', $article -> id - 1)
-                                -> first();
+        $prev = $this -> getPrevArt($article -> id);
         // 下一篇
-        $next = DB::table('article')
-            -> select('article_uuid', 'title')
-            -> where('id', $article -> id + 1)
-            -> first();
+        $next = $this->getNextArt($article -> id);
         // 评论
         $comments = DB::table('comments')
                                     -> join('account', 'account.uuid', '=', 'comments.user_uuid')
@@ -126,10 +148,35 @@ class ArticleController extends Controller
         DB::table('article') -> where('article_uuid', $article_uuid) -> increment('visit_count');
         return view('blog.article.detail', ['article' => $article, 'comments' => $comments, 'prev' => $prev, 'next' => $next]);
     }
+
+    /**
+     * @name 获取上一篇文章
+     * @param $id string 文章id
+     * @return object|false
+     *
+     * @author peijiyang<peijiyang@psfmaily.cn>
+     * @date
+     **/
+    private function getPrevArt($id)
+    {
+        if ($id - 1 <= 0) return false;
+        // 上一篇
+        $prev = DB::table('article')
+            -> select('article_uuid', 'title')
+            -> where('id', $id - 1)
+            -> where('is_open', 1)
+            -> first();
+        if (!$prev) {
+            $id = $id - 1;
+            $this -> getPrevArt($id);
+        } else {
+            return $prev;
+        }
+    }
     /**
      * @name 配合editorMd上传图片
-     * 
-     * 
+     *
+     *
      * */
     public function uploadImage(Request $request)
     {
@@ -155,5 +202,25 @@ class ArticleController extends Controller
                 'url'           => ''
             ];
         }
+    }
+
+    /**
+     * @name 获取下一篇文章
+     * @param $id int 文章id
+     *
+     * @return object|false
+     *
+     * @author peijiyang<peijiyang@psfmaily.cn>
+     * @date 2017-11-07
+     **/
+    private function getNextArt($id)
+    {
+        $next = DB::table('article')
+            ->select('article_uuid', 'title')
+            ->where('id', $id + 1)
+            ->where('is_open', 1)
+            ->first();
+        if (!$next) return false;
+        return $next;
     }
 }

@@ -214,7 +214,7 @@
         getSysStatus();
         $(function(){
             // 每2秒执行一次
-            //setInterval("getSysStatus()", 2000);
+            setInterval("getSysStatus()", 2000);
         });
     </script>
 @endsection

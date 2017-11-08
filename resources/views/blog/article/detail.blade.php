@@ -21,8 +21,9 @@
             <div class="am-g blog-article-widget blog-article-margin">
                 {{--am-u-sm-centered blog-text-center--}}
                 <div class="am-u-lg-offset-1 am-u-sm-offset-1 am-u-md-offset-1 am-u-lg-10 am-u-md-10 am-u-sm-10 markdown-body">
-                    <div>
-                        {!! $article -> contents !!}
+                    <div id="mark-view">
+                        {{--<textarea style="display:none;" name="editormd-markdown-doc">{{$article -> markdown}}</textarea>--}}
+                                {!! $article -> contents !!}
                     </div>
                 </div>
 
@@ -150,6 +151,18 @@
 @endsection
 @section('js')
     <script>
+        /*$(document).ready(function() {
+            var wordsView;
+            wordsView = editormd.markdownToHTML("mark-view", {
+                htmlDecode      : "style,script,iframe",  // you can filter tags decode
+                emoji           : true,
+                taskList        : true,
+                tex             : true,  // 默认不解析
+                flowChart       : true,  // 默认不解析
+                sequenceDiagram : true,  // 默认不解析
+            });
+
+        });*/
         $('.am-btn-secondary').click(function() {
             var uuid = '{{$article -> article_uuid}}';
             var contents = $('textarea[name=contentsa]').val();

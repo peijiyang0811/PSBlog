@@ -857,13 +857,26 @@ function getOS() {
  * */
 function getSysStatus(){
     // -M 单位转为MB -b每两次屏幕信息刷新之间的时间间隔 -n 停止 2 每隔2妙
-    $fp = popen('top -M -b -n 2 | grep -E "^(Cpu|Mem|Tasks|Swap)"',"r");//获取某一时刻系统cpu和内存使用情况
+    $fp = popen('top -b -n 2 | grep -E "(Cpu|Mem|Tasks|Swap)"',"r");//获取某一时刻系统cpu和内存使用情况
     $rs = "";
     while(!feof($fp)){
         $rs .= fread($fp,1024);
     }
     pclose($fp);
     /*
+     * centos 7 的结果：
+     * array(9) {
+              [0]=> string(68) "Tasks: 80 total, 2 running, 78 sleeping, 0 stopped, 0 zombie"
+              [1]=> string(79) "%Cpu(s): 0.3 us, 0.2 sy, 0.0 ni, 99.5 id, 0.0 wa, 0.0 hi, 0.0 si, 0.0 st"
+              [2]=> string(75) "KiB Mem : 1016396 total, 71904 free, 213016 used, 731476 buff/cache"
+              [3]=> string(75) "KiB Swap: 0 total, 0 free, 0 used. 606736 avail Mem "
+              [4]=> string(68) "Tasks: 80 total, 1 running, 79 sleeping, 0 stopped, 0 zombie"
+              [5]=> string(79) "%Cpu(s): 2.7 us, 1.7 sy, 0.0 ni, 95.7 id, 0.0 wa, 0.0 hi, 0.0 si, 0.0 st"
+              [6]=> string(75) "KiB Mem : 1016396 total, 67492 free, 217376 used, 731528 buff/cache"
+              [7]=> string(75) "KiB Swap: 0 total, 0 free, 0 used. 602360 avail Mem "
+              [8]=> string(0) ""
+        }
+     *
         0 Tasks: 104 total,   1 running, 103 sleeping,   0 stopped,   0 zombie
         1 Cpu(s):  0.2%us,  0.1%sy,  0.0%ni, 99.8%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
         2 Mem:   996.082M total,  925.785M used,   70.297M free,  167.562M buffers
@@ -875,6 +888,18 @@ function getSysStatus(){
 
     * */
     /*
+     *
+      [4]=>"Tasks: 80 total, 1 running, 79 sleeping, 0 stopped, 0 zombie"
+      [5]=>"%Cpu(s): 2.7 us, 1.7 sy, 0.0 ni, 95.7 id, 0.0 wa, 0.0 hi, 0.0 si, 0.0 st"
+      [6]=>"KiB Mem : 1016396 total, 67492 free, 217376 used, 731528 buff/cache"
+      [7]=>"KiB Swap: 0 total, 0 free, 0 used. 602360 avail Mem "
+
+        Tasks:  81 total,   2 running,  79 sleeping,   0 stopped,   0 zombie
+        %Cpu(s):  7.0 us,  3.7 sy,  0.0 ni, 89.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+        KiB Mem :  1016396 total,    85732 free,   206032 used,   724632 buff/cache
+        KiB Swap:        0 total,        0 free,        0 used.   613764 avail Mem
+
+
      *  4 Tasks: 104 total,   1 running, 103 sleeping,   0 stopped,   0 zombie
         5 Cpu(s):  2.3%us,  1.7%sy,  0.0%ni, 96.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
         6 Mem:   996.082M total,  926.270M used,   69.812M free,  167.562M buffers
@@ -893,6 +918,7 @@ function getSysStatus(){
     $mem_info = explode(',', $sys_info[6]); //内存占有量 数组
     $swap_info = explode(',', $sys_info[7]); //内存占有量 数组
     /*
+     * KiB Swap:        0 total,        0 free,        0 used.   613764 avail Mem
      * Swap:
             192772k total    交换区总量
             0k used    使用的交换区总量
@@ -905,14 +931,20 @@ function getSysStatus(){
                   1 => string '    0.000k used' (length=15)
                   2 => string '    0.000k free' (length=15)
                   3 => string '  497.137M cached' (length=17)
+           centos 7
+        array(3) {
+            [0]=> string(24) "KiB Swap: 0 total"
+            [1]=> string(14) " 0 free"
+            [2]=> string(35) " 0 used. 602360 avail Mem "
+        }
      * */
-    $data['swap']['total'] = trim(trim($swap_info[0], 'Swap:    '), 'k total');// 单位 k
+    $data['swap']['total'] = trim(trim($swap_info[0], 'KiB Swap: '), ' total');// 单位 k
     $data['swap']['total'] = formatDataSize(intval($data['swap']['total']) * 1024);//MB
-    $data['swap']['used'] = trim(trim($swap_info[1], 'k used'));// 单位 k
+    $data['swap']['used'] = trim(trim($swap_info[2], ' used. 602360 avail Mem'));// 单位 k
     $data['swap']['used'] = formatDataSize(intval($data['swap']['used']) * 1024);//MB
-    $data['swap']['free'] = trim(trim($swap_info[2], 'k used'));// 单位 k
+    $data['swap']['free'] = trim(trim($swap_info[1], ' free'));// 单位 k
     $data['swap']['free'] = formatDataSize(intval($data['swap']['free']) * 1024);//MB
-    $data['swap']['cached'] = trim(trim($swap_info[3], ' cached'));// 单位 MB
+    //$data['swap']['cached'] = trim(trim($swap_info[3], ' cached'));// 单位 MB
     $data['swap']['usage'] = 0.00;
     if ($data['swap']['total'] > 0) $data['swap']['usage'] = (float) round(100 * $data['swap']['used'] / $data['swap']['total'],2);
     //正在运行的进程数
@@ -922,6 +954,8 @@ function getSysStatus(){
         sleeping 睡眠的进程数
         stopped 停止的进程数
         zombie 僵尸进程数
+
+        Tasks: 80 total, 1 running, 79 sleeping, 0 stopped, 0 zombie
      *  task
             array(5) {
                 [0]=> string(16) "Tasks: 104 total"
@@ -958,15 +992,25 @@ function getSysStatus(){
                 [6]=> string(8) " 0.0%si"
                 [7]=> string(8) " 0.0%st"
             }
+            array(8) {
+                [0]=> string(16) "%Cpu(s): 4.3 us"
+                [1]=> string(8) " 2.7 sy"
+                [2]=> string(8) " 0.0 ni"
+                [3]=> string(8) " 93.0 id"
+                [4]=> string(8) " 0.0 wa"
+                [5]=> string(8) " 0.0 hi"
+                [6]=> string(8) " 0.0 si"
+                [7]=> string(8) " 0.0 st"
+            }
      * */
-    $data['cpu']['us_usage'] = round(trim(trim($cpu_info[0],'Cpu(s): '),'%us'), 2);  //用户空间已使用百分比
-    $data['cpu']['sys_usage'] = trim(trim($cpu_info[1],'%sy'));  //内核已使用百分比
-    $data['cpu']['free_usage'] = trim(trim($cpu_info[3],'%id'));  //空闲百分比
-    $data['cpu']['ni'] = trim(trim($cpu_info[2],'%ni'));
-    $data['cpu']['wait_for_io'] = trim(trim($cpu_info[4],'%wa'));
-    $data['cpu']['hi'] = trim(trim($cpu_info[5],'%hi'));
-    $data['cpu']['si'] = trim(trim($cpu_info[6],'%si'));
-    $data['cpu']['st'] = trim(trim($cpu_info[7],'%st'));
+    $data['cpu']['us_usage'] = round(trim(trim($cpu_info[0],'%Cpu(s): '),'%us'), 2);  //用户空间已使用百分比
+    $data['cpu']['sys_usage'] = trim(trim($cpu_info[1],'sy'));  //内核已使用百分比
+    $data['cpu']['free_usage'] = trim(trim($cpu_info[3],'id'));  //空闲百分比
+    $data['cpu']['ni'] = trim(trim($cpu_info[2],'ni'));
+    $data['cpu']['wait_for_io'] = trim(trim($cpu_info[4],'wa'));
+    $data['cpu']['hi'] = trim(trim($cpu_info[5],'hi'));
+    $data['cpu']['si'] = trim(trim($cpu_info[6],'si'));
+    $data['cpu']['st'] = trim(trim($cpu_info[7],'st'));
     //内存占有量
     /*
      * Mem:
@@ -981,11 +1025,20 @@ function getSysStatus(){
                 [2]=> string(15) " 65.371M free"
                 [3]=> string(18) " 166.883M buffers"
             }
+            array(4) {
+                [0]=> string(24) "KiB Mem : 1016396 total"
+                [1]=> string(14) " 207868 free"
+                [2]=> string(14) " 220252 used"
+                [3]=> string(20) " 588276 buff/cache"
+            }
      * */
-    $data['memory']['total'] = trim(trim($mem_info[0],'Mem: '),'M total');// 单位 MB
-    $data['memory']['used'] = trim($mem_info[1],'M used');
-    $data['memory']['free'] = trim($mem_info[2],'M free');
-    $data['memory']['buffers'] = trim($mem_info[2],'M buffers');
+    $data['memory']['total'] = trim(trim($mem_info[0],'KiB Mem : '),' total');// 单位 MB
+    $data['memory']['total'] = formatDataSize(intval($data['memory']['total']));
+    $data['memory']['used'] = trim($mem_info[2],' used');
+    $data['memory']['used'] = formatDataSize(intval($data['memory']['used']));
+    $data['memory']['free'] = trim($mem_info[1],' free');
+    $data['memory']['free'] = formatDataSize(intval($data['memory']['free']));
+    $data['memory']['buffers'] = trim($mem_info[2],' buff/cache');
     $data['memory']['usage'] = round(100 * intval($data['memory']['used']) / intval($data['memory']['total']),2);  //百分比
     /*硬盘使用率 begin
         //disk
