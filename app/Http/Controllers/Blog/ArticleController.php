@@ -13,15 +13,95 @@ class ArticleController extends Controller
 
     /**
      * @name linux模块列表
-     * @return
+     * @return view
      *
      * @author peijiyang
      * @date 2017-09-30
      * */
     public function linuxIndex()
     {
-
-        return view('blog.article.linuxList');
+        $article = DB::table('article')
+            -> join('account', 'account.uuid', '=', 'article.user_uuid')
+            -> join('article_category', 'article.cate_id', '=', 'article_category.id')
+            -> select('article_category.title as cate_title', 'account.user_name', 'article.update_time', 'article.is_open', 'article.article_uuid', 'article.tag_ids', 'article.cate_id', 'article.title', 'article.subtitle', 'article.visit_count', 'article.vote_count', 'article.collect_count', 'article.status', 'article.image', 'article.is_open')
+            -> where('article.is_open', 1)
+            -> where('article.status', 4)
+            -> where('article.cate_id' , 1)
+            -> orderBy('article.update_time', 'desc')
+            -> orderBy('article.recommend', 'desc')
+            -> orderBy('article.collect_count', 'desc')
+            -> orderBy('article.visit_count', 'desc')
+            -> paginate(10);
+        return view('blog.article.linuxList', ['data' => $article]);
+    }
+    /**
+     * @name php模块列表
+     * @return view
+     *
+     * @author peijiyang
+     * @date 2017-09-30
+     * */
+    public function phpIndex()
+    {
+        $article = DB::table('article')
+            -> join('account', 'account.uuid', '=', 'article.user_uuid')
+            -> join('article_category', 'article.cate_id', '=', 'article_category.id')
+            -> select('article_category.title as cate_title', 'account.user_name', 'article.update_time', 'article.is_open', 'article.article_uuid', 'article.tag_ids', 'article.cate_id', 'article.title', 'article.subtitle', 'article.visit_count', 'article.vote_count', 'article.collect_count', 'article.status', 'article.image', 'article.is_open')
+            -> where('article.is_open', 1)
+            -> where('article.status', 4)
+            -> where('article.cate_id' , 3)
+            -> orderBy('article.update_time', 'desc')
+            -> orderBy('article.recommend', 'desc')
+            -> orderBy('article.collect_count', 'desc')
+            -> orderBy('article.visit_count', 'desc')
+            -> paginate(10);
+        return view('blog.article.linuxList', ['data' => $article]);
+    }
+    /**
+     * @name mysql模块列表
+     * @return view
+     *
+     * @author peijiyang
+     * @date 2017-09-30
+     * */
+    public function mysqlIndex()
+    {
+        $article = DB::table('article')
+            -> join('account', 'account.uuid', '=', 'article.user_uuid')
+            -> join('article_category', 'article.cate_id', '=', 'article_category.id')
+            -> select('article_category.title as cate_title', 'account.user_name', 'article.update_time', 'article.is_open', 'article.article_uuid', 'article.tag_ids', 'article.cate_id', 'article.title', 'article.subtitle', 'article.visit_count', 'article.vote_count', 'article.collect_count', 'article.status', 'article.image', 'article.is_open')
+            -> where('article.is_open', 1)
+            -> where('article.status', 4)
+            -> where('article.cate_id' , 2)
+            -> orderBy('article.update_time', 'desc')
+            -> orderBy('article.recommend', 'desc')
+            -> orderBy('article.collect_count', 'desc')
+            -> orderBy('article.visit_count', 'desc')
+            -> paginate(10);
+        return view('blog.article.linuxList', ['data' => $article]);
+    }
+    /**
+     * @name php模块列表
+     * @return view
+     *
+     * @author peijiyang
+     * @date 2017-09-30
+     * */
+    public function lifeIndex()
+    {
+        $article = DB::table('article')
+            -> join('account', 'account.uuid', '=', 'article.user_uuid')
+            -> join('article_category', 'article.cate_id', '=', 'article_category.id')
+            -> select('article_category.title as cate_title', 'account.user_name', 'article.update_time', 'article.is_open', 'article.article_uuid', 'article.tag_ids', 'article.cate_id', 'article.title', 'article.subtitle', 'article.visit_count', 'article.vote_count', 'article.collect_count', 'article.status', 'article.image', 'article.is_open')
+            -> where('article.is_open', 1)
+            -> where('article.status', 4)
+            -> where('article.cate_id' , 7)
+            -> orderBy('article.update_time', 'desc')
+            -> orderBy('article.recommend', 'desc')
+            -> orderBy('article.collect_count', 'desc')
+            -> orderBy('article.visit_count', 'desc')
+            -> paginate(10);
+        return view('blog.article.linuxList', ['data' => $article]);
     }
     /**
      * @name 添加新博客数据操作
