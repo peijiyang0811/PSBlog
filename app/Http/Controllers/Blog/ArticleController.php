@@ -223,4 +223,30 @@ class ArticleController extends Controller
         if (!$next) return false;
         return $next;
     }
+
+    /**
+     * @name 搜索文章
+     * @param string $words 搜索的文字
+     * @return view
+     *
+     * @author peijiyang<peijiyang@psfmaily.cn>
+     * @date
+     **/
+    public function searchArticle($words)
+    {
+        $title = empty($words) ? '' : $words;
+        $article = DB::table('article')
+            -> join('account', 'account.uuid', '=', 'article.user_uuid')
+            -> join('article_category', 'article.cate_id', '=', 'article_category.id')
+            -> select('article_category.title as cate_title', 'account.user_name', 'article.update_time', 'article.is_open', 'article.article_uuid', 'article.tag_ids', 'article.cate_id', 'article.title', 'article.subtitle', 'article.visit_count', 'article.vote_count', 'article.collect_count', 'article.status', 'article.image', 'article.is_open')
+            -> where('article.is_open', 1)
+            -> where('article.status', 4)
+            -> where('article.title' , 'like', '%'.$words.'%')
+            -> orderBy('article.update_time', 'desc')
+            -> orderBy('article.recommend', 'desc')
+            -> orderBy('article.collect_count', 'desc')
+            -> orderBy('article.visit_count', 'desc')
+            -> paginate(10);
+        return view('blog.search', ['data' => $article]);
+    }
 }

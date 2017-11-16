@@ -54,9 +54,9 @@
         <ul id="home_nav" class="am-nav am-nav-pills am-topbar-nav">
 
         </ul>
-        <form class="am-topbar-form am-topbar-right am-form-inline" role="search">
+        <form class="am-topbar-form am-topbar-right am-form-inline" onsubmit="return false" role="search">
             <div class="am-form-group">
-                <input type="text" class="am-form-field am-input-sm" placeholder="搜索">
+                <input name="works" style="width: 300px" type="text" class="am-form-field am-input-sm" placeholder="搜索">
             </div>
         </form>
     </div>
@@ -94,20 +94,14 @@
 <script src="{{asset('/prism/prism.js')}}"></script>
 {{--<script src="{{asset('/markdown/dist/simplemde.min.js')}}"></script>--}}
 <script src="{{asset('/editorMd/editormd.min.js')}}"></script>
-{{--<script src="{{asset('/editorMd/lib/marked.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/prettify.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/raphael.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/underscore.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/sequence-diagram.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/flowchart.min.js')}}"></script>
-<script src="{{asset('/editorMd/lib/jquery.flowchart.min.js')}}"></script>--}}
 <!--<![endif]-->
 <!--[if lte IE 8 ]>
 <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
 <script src="{{asset('/home/js/amazeui.ie8polyfill.min.js')}}"></script>
 <![endif]-->
-<script src="{{asset('/home//js/amazeui.min.js')}}"></script>
+<script src="{{asset('/home/js/amazeui.min.js')}}"></script>
+<script src="{{asset('/js/global.js')}}"></script>
 <script src="{{asset('/js/returnTop.js')}}"></script>
 <!-- <script src="{{asset('/home/js/app.js')}}"></script> -->
 <script>
@@ -162,6 +156,22 @@
                 this_a.siblings().removeClass('am-active');
             }
         });
+    });
+    // 按 enter 进入
+    $(window).keydown(function(event){
+        switch(event.keyCode) {
+            case 13:
+                var words = $('input[name=works]').val();
+                if (is_empty(words)) {
+                    alert('搜索内容不能为空');
+                    return;
+                }
+                redirect('/search/'+ words);
+                break;
+            default:
+                // alertInfo($('.alert-modal'), '错误', '非法操作');
+                break;
+        }
     });
 </script>
 @section('js')

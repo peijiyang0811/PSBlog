@@ -84,6 +84,7 @@ Route::get('/out', 'Blog\LoginController@out');
 Route::get('/forget', 'Blog\LoginController@forget');
 Route::get('/register', 'Blog\LoginController@register');
 Route::get('/article/{uuid}', 'Blog\ArticleController@detail');
+Route::get('/search/{words}', 'Blog\ArticleController@searchArticle');
 Route::group(['prefix'=>'linux', 'namespace'=>'Blog'], function(){
     /*-----------------------------------------Linux----------------------------------------------*/
     Route::get('', 'ArticleController@linuxIndex');
