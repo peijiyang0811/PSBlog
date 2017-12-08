@@ -163,10 +163,12 @@
             case 13:
                 var words = $('input[name=works]').val();
                 if (is_empty(words)) {
-                    alert('搜索内容不能为空');
-                    return;
+                    if (curr_url != url + '/center/blog/add') {
+                        alert('搜索内容不能为空');
+                        return;
+                        redirect('/search/'+ words);
+                    }
                 }
-                redirect('/search/'+ words);
                 break;
             default:
                 // alertInfo($('.alert-modal'), '错误', '非法操作');

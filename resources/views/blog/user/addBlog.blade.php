@@ -103,7 +103,7 @@
                 imageUploadURL : "{{url('center/blog/upload/image')}}",//注意你后端的上传图片服务地址
                 /*上传图片成功后可以做一些自己的处理*/
                 onload: function () {
-                    console.log('onload', this);
+                    //console.log('onload', this);
                     //this.fullscreen();
                     //this.unwatch();
                     //this.watch().fullscreen();
