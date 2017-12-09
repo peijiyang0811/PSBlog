@@ -35,6 +35,18 @@ class AppServiceProvider extends ServiceProvider
             // php gbk bg2312 '/^['.chr(0xa1).'-'.char(0xff)']$/'
             return preg_match('/^[\x{4e00}-\x{9fa5}]{2,10}$/u', $value) ? $value : false;
         });
+        // URL 验证
+        Validator::extend('is_url', function ($attribute, $value, $parameters, $validator) {
+            // js /^[\u4e00-\u9fa5]{2,10}$/
+            // php utf8  /^[\x{4e00}-\x{9fa5}]{2,10}$/u
+            // php gbk bg2312 '/^['.chr(0xa1).'-'.char(0xff)']$/'
+            return preg_match('/^(http|https|ftp)\:\/\/[a-zA-Z0-9]+([a-zA-Z0-9\-\.]+)?\.(com|org|net|mil|edu|COM|ORG|NET|MIL|EDU)$/', $value) ? true : false;
+        });
+        // QQ 验证
+        Validator::extend('is_qq', function ($attribute, $value, $parameters, $validator) {
+
+            return preg_match('/^[1-9][0-9]{4,}$/u', $value) ? true : false;
+        });
         //sql调试
 
         /*DB::listen(function ($sql) {

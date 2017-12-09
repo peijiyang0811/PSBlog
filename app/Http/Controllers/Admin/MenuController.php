@@ -154,11 +154,12 @@ class MenuController extends AdminBaseController
         $id = $params['id'];
         $pid = $params['pid'];
         unset($params['id']);
-        $info = DB::table('navigate')
+        /*$info = DB::table('navigate')
                         -> select('id','title', 'icon', 'type', 'url', 'pid')
                         -> where('id', $pid)
+                        -> where('type', $params['type'])
                         -> first();
-        if ($info) return back() -> withInput() -> with('error', '该分类下该有自连接,拒绝更改');
+        if ($info) return back() -> withInput() -> with('error', '该分类下有子连接,拒绝更改');*/
         $row = DB::table('navigate')
                         -> where('id', $id)
                         -> update($params);

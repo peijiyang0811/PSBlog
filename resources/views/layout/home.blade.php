@@ -163,11 +163,15 @@
             case 13:
                 var words = $('input[name=works]').val();
                 if (is_empty(words)) {
-                    if (curr_url != url + '/center/blog/add') {
+                    // indexOf == -1 不包含  == 0 匹配
+                    if (curr_url == url + '/center/blog/add' || curr_url.indexOf(url+'/center/blog/edit') == 0) {
+
+                    } else {
                         alert('搜索内容不能为空');
                         return;
-                        redirect('/search/'+ words);
                     }
+                } else {
+                    redirect('/search/'+ words);
                 }
                 break;
             default:

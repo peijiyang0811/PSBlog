@@ -71,6 +71,14 @@ Route::group(['namespace' => 'Admin', 'prefix' => 'admin', 'middleware' => 'admi
         Route::post('update', 'ArticleCateController@getUpdate');
         Route::post('del', 'ArticleCateController@getDel');
     });
+    /*--------------------------------------- 链接管理 ------------------------------------------------*/
+    Route::group(['prefix' => 'links'], function() {
+        Route::get('index', 'LinksController@index');
+        Route::get('add', 'LinksController@add');
+        Route::post('new', 'LinksController@new');
+        Route::get('edit/{id}', 'LinksController@edit');
+        Route::post('update', 'LinksController@update');
+    });
     // 退出登陆
     Route::get('out', 'LoginController@loginOut');
 });

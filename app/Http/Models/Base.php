@@ -17,11 +17,15 @@ class Base extends Model
      * protected $table;// 定义数据表
      * protected $primaryKey;// 自定义主键
      * public $timestamps = false;//是否应该被打上时间戳
-     *  protected $dateFormat = 'U';//模型日期列的存储格式
+     * protected $dateFormat = 'U';//模型日期列的存储格式
      * protected $fillable = [];//可以被批量赋值的属性。设置好可以被批量赋值的属性，便能通过 create 方法来添加一条新记录到数据库。
      * create 方法将返回已经被保存的模型实例：
      *
-     * protected $guarded = []//不可被批量赋值的属性
+     *  protected $guarded = []//禁止被批量赋值的属性
+     *  protected $hidden = []; 不显示的字段
+     *  自定义用于存储时间戳的字段名称
+     *  const CREATED_AT = 'creation_date';
+        const UPDATED_AT = 'last_update';
      *
      * */
 

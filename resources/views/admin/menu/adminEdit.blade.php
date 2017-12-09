@@ -56,8 +56,8 @@
                         <label for="links-phone" class="am-u-sm-12 am-form-label am-text-left">分类 <span class="tpl-form-line-small-title">type</span></label>
                         <div class="am-u-sm-12  am-margin-top-xs">
                             <select data-am-selected="{searchBox: 1}" name="type" style="display: none;">
-                                <option value="1" @if ($links->type == 1) selected @endif>前台</option>
-                                <option value="2" @if ($links->type == 2) selected @endif>后台</option>
+                                <option name="type" value="1" @if ($links->type == 1) selected @endif>前台</option>
+                                <option name="type" value="2" @if ($links->type == 2) selected @endif>后台</option>
                             </select>
                         </div>
                     </div>
